@@ -1,3 +1,10 @@
+"""
+Module for simulating a boxing ring.
+
+This module defines the RingModel class which manages boxers in a ring,
+simulates fights between two boxers based on calculated fighting skills,
+updates boxer statistics, and clears the ring after a fight.
+"""
 import logging
 import math
 from typing import List
@@ -12,10 +19,38 @@ configure_logger(logger)
 
 
 class RingModel:
+     """Model representing a boxing ring where fights occur.
+
+    This class manages the boxers currently in the ring and provides methods
+    to simulate a fight, clear the ring, allow boxers to enter, retrieve boxers,
+    and calculate a fighting skill for each boxer.
+    """
     def __init__(self):
+         """Initializes the RingModel with an empty ring.
+
+        Attributes:
+            ring (List[Boxer]): A list of Boxer instances currently in the ring.
+        """
         self.ring: List[Boxer] = []
 
     def fight(self) -> str:
+        """Simulates a fight between the two boxers in the ring and returns the winner's name.
+
+        This method performs the following steps:
+          1. Ensures that there are exactly two boxers in the ring.
+          2. Retrieves the two boxers.
+          3. Calculates a fighting skill for each boxer using an arbitrary formula.
+          4. Normalizes the absolute skill difference using a logistic function.
+          5. Compares a random number (from get_random) to the normalized difference to determine the winner.
+          6. Updates the boxers' fight statistics (win/loss) accordingly.
+          7. Clears the ring after the fight.
+
+        Returns:
+            str: The name of the winning boxer.
+
+        Raises:
+            ValueError: If there are fewer than two boxers in the ring.
+        """
         if len(self.ring) < 2:
             raise ValueError("There must be two boxers to start a fight.")
 
@@ -46,11 +81,24 @@ class RingModel:
         return winner.name
 
     def clear_ring(self):
+        """Clears all boxers from the ring.
+
+        If the ring is already empty, this function simply returns.
+        """
         if not self.ring:
             return
         self.ring.clear()
 
     def enter_ring(self, boxer: Boxer):
+        """Adds a boxer to the ring.
+
+        Args:
+            boxer (Boxer): The boxer to be added to the ring.
+
+        Raises:
+            TypeError: If the provided argument is not a Boxer instance.
+            ValueError: If the ring is already full (contains two boxers).
+        """
         if not isinstance(boxer, Boxer):
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
@@ -60,6 +108,15 @@ class RingModel:
         self.ring.append(boxer)
 
     def get_boxers(self) -> List[Boxer]:
+        """Retrieves the list of boxers currently in the ring.
+
+        Returns:
+            List[Boxer]: The list of Boxer instances in the ring.
+
+        Note:
+            Currently, this method simply returns the internal ring list.
+            Additional logic may be added later if needed.
+        """
         if not self.ring:
             pass
         else:
@@ -69,6 +126,21 @@ class RingModel:
 
     def get_fighting_skill(self, boxer: Boxer) -> float:
         # Arbitrary calculations
+        """Calculates the fighting skill of a given boxer.
+
+        The fighting skill is calculated using an arbitrary formula that takes into
+        account the boxer's weight, the length of their name, reach, and an age modifier.
+        The age modifier is:
+          - -1 if the boxer is younger than 25,
+          - -2 if the boxer is older than 35,
+          - 0 otherwise.
+
+        Args:
+            boxer (Boxer): The boxer whose fighting skill is to be calculated.
+
+        Returns:
+            float: The calculated fighting skill.
+        """
         age_modifier = -1 if boxer.age < 25 else (-2 if boxer.age > 35 else 0)
         skill = (boxer.weight * len(boxer.name)) + (boxer.reach / 10) + age_modifier
 
