@@ -1,4 +1,5 @@
 import sqlite3
+from unittest.mock import call
 import pytest
 
 from boxing.models.boxers_model import Boxer 
@@ -37,24 +38,6 @@ def sample_ring2(sample_boxer1: Boxer, sample_boxer2: Boxer, sample_boxer3: Boxe
   ring.enter_ring(sample_boxer2)
   ring.enter_ring(sample_boxer3)
   return ring
-
-@pytest.fixture
-def mock_db_conn(monkeypatch):
-  class MockConnection:
-    def cursor(self):
-      class MockCursor:
-        def execute(*args):
-            return None
-
-        def fetchone(*args):
-          return None
-
-      return MockCursor()
-
-    def close(self):
-      pass
-
-  monkeypatch.setattr(sqlite3, "connect", lambda x: MockConnection())
 
 # Test Enter Ring
 def test_enter_ring(ring_model: RingModel, sample_boxer1: Boxer):
@@ -131,15 +114,20 @@ def test_ring_fight(mocker):
   """
   boxer1 = Boxer(1, 'boxer1', 200, 200, 10, 30)
   boxer2 = Boxer(2, 'boxer2', 150, 150, 1, 45)
-  with mocker.patch('boxing.models.boxers_model.update_boxer_stats', return_value=None):
-    ring_model = RingModel()
-    ring_model.enter_ring(boxer1)
-    ring_model.enter_ring(boxer2)
 
-    winner = ring_model.fight()
-    assert winner == 'boxer1', f'Expected boxer1 to win, got {winner}'
+  mock = mocker.patch('boxing.models.ring_model.update_boxer_stats', return_value=None)
 
+  ring_model = RingModel()
+  ring_model.enter_ring(boxer1)
+  ring_model.enter_ring(boxer2)
 
+  winner = ring_model.fight()
+ 
+  assert winner == 'boxer1', f'Expected boxer1 to win, got {winner}'
+  mock.assert_has_calls([
+    call(1, 'win'),
+    call(2, 'loss')
+  ])
 
 ## Test getFightingSkill
 # Test age effects
