@@ -1,3 +1,9 @@
+"""
+This module sets up the main Flask application for the Boxing service.
+It configures environment variables, logging, and defines various routes
+for health checks, database checks, and boxing operations.
+"""
+
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 # from flask_cors import CORS
@@ -7,16 +13,16 @@ from boxing.models.ring_model import RingModel
 from boxing.utils.logger import configure_logger
 from boxing.utils.sql_utils import check_database_connection, check_table_exists
 
-
+# Load environment variables from a .env file if present
 load_dotenv()
 
-
+# Create the Flask application
 app = Flask(__name__)
 # If you get errors that use words like cross origin or flight, uncomment this.
 # It will bypass standard security stuff we'll talk about later
 # CORS(app)
 
-
+# Initialize the ring model and configure the logger
 ring_model = RingModel()
 configure_logger(app.logger)
 
@@ -33,9 +39,14 @@ def healthcheck() -> Response:
     """
     Health check route to verify the service is running.
 
-    Returns:
-        JSON response indicating the health status of the service.
+    This endpoint returns a JSON response indicating whether the
+    Boxing service is operational. The response includes a "status"
+    and a "message" field.
 
+    :return: A Flask `Response` object containing JSON with:
+        - status (str): "success"
+        - message (str): "Service is running"
+    :rtype: Response
     """
     app.logger.info("Health check endpoint hit")
     return make_response(jsonify({

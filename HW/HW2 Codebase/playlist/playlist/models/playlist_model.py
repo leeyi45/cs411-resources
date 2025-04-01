@@ -1,3 +1,15 @@
+"""
+Module for managing a playlist of songs.
+
+This module defines the PlaylistModel class, which provides functionality to:
+  - Manage songs in a playlist (adding, removing, retrieving).
+  - Navigate the playlist (move songs, set current track, random track selection).
+  - Play songs and update play counts.
+  - Validate song IDs and track numbers, and check if the playlist is empty.
+
+The module uses logging to track operations and errors.
+"""
+
 import logging
 from typing import List
 
