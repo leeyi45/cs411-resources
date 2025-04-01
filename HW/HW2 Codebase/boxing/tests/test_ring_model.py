@@ -1,6 +1,6 @@
-import sqlite3
 from unittest.mock import call
 import pytest
+from typing import List, Tuple
 
 from boxing.models.boxers_model import Boxer 
 from boxing.models.ring_model import RingModel
@@ -129,37 +129,23 @@ def test_ring_fight(mocker):
     call(2, 'loss')
   ])
 
-## Test getFightingSkill
-# Test age effects
-def test_get_fighting_skill_below_25(ring_model: RingModel):
-  boxer = Boxer(1, "guy1", 170, 170, 10, 20)
-  skill = ring_model.get_fighting_skill(boxer)
+  assert len(ring_model.get_boxers()) == 0, 'Ring should be empty after fight'
 
-  # base is 681
-  assert skill == pytest.approx(680), f'Expected 680, got {skill}'
- 
-def test_get_fighting_skill_at_25(ring_model: RingModel):
-  boxer = Boxer(1, "guy1", 170, 170, 10, 25)
-  skill = ring_model.get_fighting_skill(boxer)
+# Test getFightingSkill
+def test_get_fighting_skill():
+  ring = RingModel()
 
-  assert skill == pytest.approx(681), f'Expected 681, got {skill}'
+  cases: List[Tuple[Boxer, int]] = [
+    # Age Effects
+    (Boxer(1, "guy1", 170, 170, 10, 20), 680),
+    (Boxer(1, "guy1", 170, 170, 10, 25), 681),
+    (Boxer(1, "guy1", 170, 170, 10, 30), 681),
+    (Boxer(1, "guy1", 170, 170, 10, 35), 681),
+    (Boxer(1, "guy1", 170, 170, 10, 40), 679),
 
-def test_get_fighting_skill_at_30(ring_model: RingModel):
-  boxer = Boxer(1, "guy1", 170, 170, 10, 30)
-  skill = ring_model.get_fighting_skill(boxer)
+    # Weight effects
+  ]
 
-  assert skill == pytest.approx(681), f'Expected 681, got {skill}'
-
-def test_get_fighting_skill_at_35(ring_model: RingModel):
-  boxer = Boxer(1, "guy1", 170, 170, 10, 35)
-  skill = ring_model.get_fighting_skill(boxer)
-
-  assert skill == pytest.approx(681), f'Expected 681, got {skill}'
-
-def test_get_fighting_skill_above_35(ring_model: RingModel):
-  boxer = Boxer(1, "guy1", 170, 170, 10, 40)
-  skill = ring_model.get_fighting_skill(boxer)
-
-  assert skill == pytest.approx(679), f'Expected 679, got {skill}'
-
-# test weight effects
+  for i, (boxer, expected) in enumerate(cases, 1):
+    result = ring.get_fighting_skill(boxer)
+    assert expected == pytest.approx(result), f'{i}. Expected skill of {expected}, got {result}'
