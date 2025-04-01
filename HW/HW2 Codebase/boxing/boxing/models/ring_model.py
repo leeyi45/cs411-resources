@@ -19,14 +19,14 @@ configure_logger(logger)
 
 
 class RingModel:
-     """Model representing a boxing ring where fights occur.
+    """Model representing a boxing ring where fights occur.
 
     This class manages the boxers currently in the ring and provides methods
     to simulate a fight, clear the ring, allow boxers to enter, retrieve boxers,
     and calculate a fighting skill for each boxer.
     """
     def __init__(self):
-         """Initializes the RingModel with an empty ring.
+        """Initializes the RingModel with an empty ring.
 
         Attributes:
             ring (List[Boxer]): A list of Boxer instances currently in the ring.
@@ -111,11 +111,11 @@ class RingModel:
             TypeError: If the provided argument is not a Boxer instance.
             ValueError: If the ring is already full (contains two boxers).
         """
-        logger.info("Attempting to add boxer '%s' to the ring.", boxer.name)
         if not isinstance(boxer, Boxer):
             logger.error("Invalid type: Expected 'Boxer', got '%s'.", type(boxer).__name__)
             raise TypeError(f"Invalid type: Expected 'Boxer', got '{type(boxer).__name__}'")
 
+        logger.info("Attempting to add boxer '%s' to the ring.", boxer.name)
         if len(self.ring) >= 2:
             logger.error("Cannot add boxer: ring is full.")
             raise ValueError("Ring is full, cannot add more boxers.")

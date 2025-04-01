@@ -46,13 +46,13 @@ class Boxer:
     weight_class: str = None
 
     def __post_init__(self):
-         """Automatically assigns the weight class based on the boxer's weight."""
+        """Automatically assigns the weight class based on the boxer's weight."""
         logger.debug("Assigning weight class for boxer: %s", self.name)
         self.weight_class = get_weight_class(self.weight)  # Automatically assign weight class
 
 
 def create_boxer(name: str, weight: int, height: int, reach: float, age: int) -> None:
-     """Creates a new boxer record in the database.
+    """Creates a new boxer record in the database.
 
     Validates the input parameters, checks for duplicates, and inserts
     the new boxer into the 'boxers' table.
@@ -69,7 +69,7 @@ def create_boxer(name: str, weight: int, height: int, reach: float, age: int) ->
                     or if a boxer with the same name already exists.
         sqlite3.Error: If there is an error during database operations.
     """
-     logger.info("Attempting to create boxer: %s", name)
+    logger.info("Attempting to create boxer: %s", name)
     if weight < 125:
         logger.error("Invalid weight provided: %s", weight)
         raise ValueError(f"Invalid weight: {weight}. Must be at least 125.")
@@ -119,7 +119,7 @@ def delete_boxer(boxer_id: int) -> None:
         ValueError: If no boxer with the given ID is found.
         sqlite3.Error: If there is an error during the deletion process.
     """
-     logger.info("Attempting to delete boxer with ID %d", boxer_id)
+    logger.info("Attempting to delete boxer with ID %d", boxer_id)
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -139,7 +139,7 @@ def delete_boxer(boxer_id: int) -> None:
 
 
 def get_leaderboard(sort_by: str = "wins") -> List[dict[str, Any]]:
-   """Retrieves the leaderboard of boxers sorted by wins or win percentage.
+    """Retrieves the leaderboard of boxers sorted by wins or win percentage.
 
     The function returns records only for boxers with at least one fight.
     It calculates the win percentage and orders the results accordingly.
