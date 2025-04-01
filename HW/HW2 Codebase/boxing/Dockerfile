@@ -30,5 +30,8 @@ VOLUME ["/app/db"]
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
+RUN chmod +x /app/entrypoint.sh
+
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
+
