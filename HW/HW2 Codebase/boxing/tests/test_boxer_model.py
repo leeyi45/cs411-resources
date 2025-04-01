@@ -1,4 +1,6 @@
 import pytest
+import sqlite3
+from typing import List, Tuple
 from unittest.mock import Mock, call
 from boxing.models.boxers_model import *
 
@@ -133,6 +135,20 @@ def test_create_boxer_with_existing_name(mock_db_cursor, mock_db_connection: Moc
   mock_db_cursor.execute.assert_called_once()
   mock_db_connection.commit.assert_not_called()
 
+def test_create_boxer_with_integrity_error(mock_db_cursor, mock_db_connection: MockConnection):
+  """Test calling create_boxer with a boxer that already exists, however
+  the error is caused by IntegrityError, rather than fetchone returning true
+  
+  """
+  mock_db_cursor.fetchone.return_value = None
+  mock_db_cursor.execute.side_effect = sqlite3.IntegrityError
+
+  with pytest.raises(ValueError, match="Boxer with name 'boxer1' already exists"):
+    create_boxer('boxer1', 170, 170, 10, 30)
+  
+  mock_db_connection.commit.assert_not_called()
+  mock_db_cursor.execute.assert_called_once()
+
 # Test boxer_deletion
 def test_delete_boxer(mock_db_cursor, mock_db_connection: MockConnection):
   """Test a normal call to delete_boxer
@@ -158,6 +174,9 @@ def test_delete_nonexistent_boxer(mock_db_cursor, mock_db_connection: MockConnec
     delete_boxer(1)
 
   mock_db_connection.commit.assert_not_called()
+  mock_db_cursor.execute.assert_called_once_with(
+    "SELECT id FROM boxers WHERE id = ?", (1,)
+  )
 
 # Test get_leaderboard
 def test_get_leaderboard(mock_db_cursor):
@@ -302,7 +321,7 @@ def test_get_weight_class():
   """Test get_weight_class with valid weight values
   
   """
-  cases = [
+  cases: List[Tuple[int, str]] = [
     (204, 'HEAVYWEIGHT'),
     (203, 'HEAVYWEIGHT'),
     (202, 'MIDDLEWEIGHT'),
@@ -318,10 +337,9 @@ def test_get_weight_class():
     (125, 'FEATHERWEIGHT')
   ]
 
-  for each in cases:
-    weight, expected = each
+  for i, (weight, expected) in enumerate(cases, 1):
     result = get_weight_class(weight)
-    assert result == expected, f'Exepected weight of {weight} to be {expected}, got {result}'
+    assert result == expected, f'{i}. Exepected weight of {weight} to be {expected}, got {result}'
 
 def test_get_weight_class_invalid():
   """Test get_weight_class with an invalid weight value

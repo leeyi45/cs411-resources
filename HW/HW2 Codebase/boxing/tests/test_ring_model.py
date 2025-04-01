@@ -23,20 +23,12 @@ def sample_boxer2():
 def sample_boxer3():
   return Boxer(3, 'guy3', 200, 170, 10, 30)
 
-"""Fixtures providing sample rings for the tests."""
+"""Fixtures providing a sample ring for the tests."""
 @pytest.fixture
-def sample_ring1(sample_boxer1: Boxer, sample_boxer2: Boxer) -> RingModel:
+def sample_ring(sample_boxer1: Boxer, sample_boxer2: Boxer) -> RingModel:
   ring = RingModel()
   ring.enter_ring(sample_boxer1)
   ring.enter_ring(sample_boxer2)
-  return ring
-
-@pytest.fixture
-def sample_ring2(sample_boxer1: Boxer, sample_boxer2: Boxer, sample_boxer3: Boxer) -> RingModel:
-  ring = RingModel()
-  ring.enter_ring(sample_boxer1)
-  ring.enter_ring(sample_boxer2)
-  ring.enter_ring(sample_boxer3)
   return ring
 
 # Test Enter Ring
@@ -78,18 +70,18 @@ def test_non_boxer_enter_ring(ring_model: RingModel):
     ring_model.enter_ring("some_string")
 
 # Test Clear Ring
-def test_clear_ring(sample_ring1: RingModel):
+def test_clear_ring(sample_ring: RingModel):
   """Test removing all boxers from the ring
 
   """
-  assert len(sample_ring1.get_boxers()) == 2, f'Expected 2 boxers, but got {len(sample_ring1.get_boxers())}'
+  assert len(sample_ring.get_boxers()) == 2, f'Expected 2 boxers, but got {len(sample_ring.get_boxers())}'
   
-  sample_ring1.clear_ring()
-  assert len(sample_ring1.get_boxers()) == 0, f'Expected no boxers, but got {len(sample_ring1.get_boxers())}'
+  sample_ring.clear_ring()
+  assert len(sample_ring.get_boxers()) == 0, f'Expected no boxers, but got {len(sample_ring.get_boxers())}'
 
   # it should not error even if clear is called on an empty ring
-  sample_ring1.clear_ring()
-  assert len(sample_ring1.get_boxers()) == 0, f'Expected no boxers, but got {len(sample_ring1.get_boxers())}'
+  sample_ring.clear_ring()
+  assert len(sample_ring.get_boxers()) == 0, f'Expected no boxers, but got {len(sample_ring.get_boxers())}'
 
 # Test ring fight
 def test_ring_fight_empty(ring_model: RingModel):
@@ -144,6 +136,10 @@ def test_get_fighting_skill():
     (Boxer(1, "guy1", 170, 170, 10, 40), 679),
 
     # Weight effects
+    (Boxer(1, "guy1", 180, 170, 10, 20), 720),
+    
+    # Name effects
+    (Boxer(1, "guy12", 170, 170, 10, 20), 850),
   ]
 
   for i, (boxer, expected) in enumerate(cases, 1):

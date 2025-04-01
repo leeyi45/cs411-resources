@@ -3,9 +3,7 @@ import requests
 
 from boxing.utils.api_utils import get_random
 
-
 RANDOM_NUMBER = 4
-
 
 @pytest.fixture
 def mock_random_org(mocker):
